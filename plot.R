@@ -78,4 +78,31 @@ chalenge <- df %>%
   filter(Reactor.cycle==2) %>% 
   group_by(Reactor.phase) %>% 
   summarise(sd.d2= sd(Diversity...D2), meanlg= mean(log(Cell.density..cells.mL.)))
+#chalenge
+#df %>%
+#  filter(Reactor.cycle == 2) %>%
+#  summarise(mean_d2 = mean(Diversity...D2),
+            #mean_log_celldens = mean(log(Cell.density..cells.mL.)))
+meanph <- df %>%
+  filter(Reactor.cycle == 2) %>% 
+  group_by(Reactor.phase) %>%
+  mutate(condratio=Conductivity/temp) %>% 
+  summarise(mean.ph = mean(ph),
+            mean.d2 = mean(Diversity...D2),
+            sd.ph = sd(ph),
+            sd.d2 = sd(Diversity...D2),
+            avelog10.celldens = mean(log10(Cell.density..cells.mL.)),
+            mean.condrat = mean(condratio))
 
+
+#merging data (combine dplyr  and ggplot)
+
+physiochem <- df %>%
+  select(sample_title, temp, ph, Conductivity)
+physiochem # Our first dataframe
+
+diversity <- df %>%
+  select(sample_title, contains("Diversity"))
+diversity # Our second dataframe
+physicodiversity <- full_join(physiochem,diversity,by="sample_title")
+physicodiversity
